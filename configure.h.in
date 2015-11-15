@@ -1,0 +1,10 @@
+#define dpps_VERSION_MAJOR @dpps_VERSION_MAJOR@
+#define dpps_VERSION_MINOR @dpps_VERSION_MINOR@
+#define dpps_VERSION_PATCH @dpps_VERSION_PATCH@
+#cmakedefine TCLAP_FOUND 1
+#cmakedefine QT_FOUND 1
+#cmakedefine PNGPP_FOUND 1
+#cmakedefine NO_ERRHANDLING_ERRNO 0
+#cmakedefine VECTOR_SIZE_LONG_LONG 1
+#cmakedefine GSL_FOUND 1
+#cmakedefine FILENAMES_FOR_WINDOWS 1
