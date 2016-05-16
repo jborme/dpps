@@ -1526,8 +1526,10 @@ check_selection_not_too_high(selection) ;
 //         }) ;
     for (auto p: polylines)
         if ((selection < 0) || (p. selected[selection])) {
-            v = v + ((p. geometrical_centre ()) * p. size ()) ;
-            i++ ;
+            if (p. size() > 0) {
+                v = v + ((p. geometrical_centre ()) * p. size ()) ;
+                i += p.size() ;
+            }
         }
     return (v/i) ;
 }

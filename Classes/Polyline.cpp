@@ -540,11 +540,11 @@ double dpps::Polyline::algebraic_perimeter () const {
 // http://www.wikihow.com/Calculate-the-Area-of-a-Polygon
 double dpps::Polyline::algebraic_area () const {
     Polyline q {*this} ;
-//     std::cout << "We calculate area of " << q. display_string () << "\n" ;
-    if (is_self_crossing())  {
-        q. reorder_vertices_by_angle() ;
+    //std::cout << "We calculate area of " << q. display_string () << "\n" ;
+//    if (is_self_crossing())  {
+        //q. reorder_vertices_by_angle() ;
 //         std::cout << "Now in order : " << q. display_string () << "\n" ;
-    }
+//    }
 
     if (q. vertices. size () <= 2)
         return 0.0 ;
@@ -1137,11 +1137,9 @@ bool dpps::Polyline::is_self_crossing () const {
         for (long_unsigned_int j {i+2} ; j < s2 ; j++) {
             bool intersect = Vertex::intersects (
                 q.vertices[i], q.vertices[i+1], q.vertices[j], q.vertices[j+1]) ;
-//              std::cout << "analyzing : (" << q.vertices[i].display_string() << " <-> " << q.vertices[i+1].display_string()
-//                        << ") AND (" << q.vertices[j].display_string() << " <-> " << q.vertices[j+1].display_string() << ") : " << intersect << "\n";
-            if ((!q. vertices[i].   equals_to (q. vertices[j])) &&
+           if ((!q. vertices[i+1].   equals_to (q. vertices[j])) &&
                 (!q. vertices[i].   equals_to (q. vertices[j+1])) &&
-                (!q. vertices[i+i]. equals_to (q. vertices[j])) &&
+                (!q. vertices[i+1]. equals_to (q. vertices[j])) &&
                 (!q. vertices[i+1]. equals_to (q. vertices[j+1])) &&
                 intersect)
                 return true ;
