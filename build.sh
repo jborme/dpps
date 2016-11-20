@@ -17,7 +17,8 @@
 
 # User settings
 prog=dpps
-REP=/mnt/stockage/jerome/travail/INL/projets/C/20131117-masques/
+# REP=/mnt/stockage/jerome/travail/INL/projets/C/20131117-masques/
+REP=/home/jerome/travail/2014/projets/C/dpps/
 makeopts="-j4" #VERBOSE=1
 # end of user settings
 

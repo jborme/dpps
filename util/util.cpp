@@ -14,6 +14,7 @@
 #include <iomanip>
 #include <chrono>
 #include <iostream>
+#include <math.h> // exp
 #include "util.hh"
 #include "bad_parametre.hh"
 
