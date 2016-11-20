@@ -40,7 +40,7 @@ dpps::Pattern::Pattern () {
     high_clock::duration duration_now {time_point_now. time_since_epoch ()} ;
     time_seed = duration_now. count () ;
     pseudorandom_generator. seed (time_seed) ;
-//    pseudorandom_generator. seed (0) ;
+//    pseudorandom_generator. seed (0) ; // non-random initialization for debug purposes
 }
 
 dpps::Pattern::~Pattern () {
@@ -1430,7 +1430,7 @@ check_selection_not_too_high(selection) ;
                 case random_property_position_xy: // 0 bivariate
                 { // grouping because of the variable declaration.
                     double angle {d_angle (pseudorandom_generator)} ;
-                    p. translate (Vertex (x[0]*cos (angle), x[0]*cos (angle))) ;
+                    p. translate (Vertex (x[0]*cos (angle), x[1]*sin (angle))) ;
                     break ;
                 }
                 case random_property_position_x: // 1
