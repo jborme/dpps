@@ -25,6 +25,9 @@ namespace dpps {
  * could be mimicked in a physical system by sending glued balls one against
  * the others.
  *
+ * It will add single dots, with a dose set to match the diametre. The user can
+ * call Pattern::replace_by() to replace the dot by another element.
+ *
  * Note that we would like to reproduce things like:
  *
  * Experimental observation of plasmons in a graphene monolayer resting on

@@ -255,13 +255,13 @@ void dpps::Pattern_hard_sphere_random_packing::generate () {
     // NOTE: gcc allows cbegin() and cend() here, but clang does not.
     full_spheres. insert (full_spheres. end (), open_spheres. begin (),
         open_spheres. end ()) ;
-    Polyline p (16, pattern_settings. diametre) ;
-    p.closed = true ;
     // the reference &i is used to avoid copy
+    Polyline q ;
+    q. dose = pattern_settings. diametre / 2.0 ;
     for (auto &i: full_spheres) {
-        Polyline q = p ;
-        q. translate (Vertex (i. x, i. y)) ;
+        q. push_back (Vertex (i. x, i. y)) ;
         polylines. push_back (q) ;
+        q. vertices. clear () ;
     }
 }
 
