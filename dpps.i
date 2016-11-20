@@ -728,11 +728,12 @@ public:
         const enum_distribution type,
         const long_unsigned_int number,
         const long_unsigned_int max_attempts,
+        const bool avoid_overlap,
         const double x0,
         const double y0,
         const double lx,
         const double ly,
-        const double side,
+        const double diametre,
         const double p1,
         const double p2) ;
     Pattern_random &operator= (const Pattern_random &source) ;
@@ -745,11 +746,12 @@ public:
         const enum_distribution type,
         const long_unsigned_int number,
         const long_unsigned_int max_attempts,
+        const bool avoid_overlap,
         const double x0,
         const double y0,
         const double lx,
         const double ly,
-        const double side,
+        const double diametre,
         const double p1,
         const double p2) ;
 } ;

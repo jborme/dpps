@@ -12,6 +12,7 @@
  */
 
 #include <limits>
+//#include <iostream>
 
 #include "Pattern_random.hh"
 #include "bad_parametre.hh"
@@ -49,14 +50,15 @@ dpps::Pattern_random::Pattern_random (
     const enum_distribution type,
     const long_unsigned_int number,
     const long_unsigned_int max_attempts,
+    const bool avoid_overlap,
     const double x0,
     const double y0,
     const double lx,
     const double ly,
-    const double side,
+    const double diametre,
     const double p1,
     const double p2) {
-    set_all_parametres (type, number, max_attempts, x0, y0, lx, ly, side, p1, p2) ;
+    set_all_parametres (type, number, max_attempts, avoid_overlap, x0, y0, lx, ly, diametre, p1, p2) ;
     generate () ;
 }
 
@@ -64,21 +66,23 @@ void dpps::Pattern_random::set_all_parametres (
     const enum_distribution type,
     const long_unsigned_int number,
     const long_unsigned_int max_attempts,
+    const bool avoid_overlap,
     const double x0,
     const double y0,
     const double lx,
     const double ly,
-    const double side,
+    const double diametre,
     const double p1,
     const double p2) {
     pattern_settings. type = type ;
     pattern_settings. number = number ;
     pattern_settings. max_attempts = max_attempts ;
+    pattern_settings. avoid_overlap = avoid_overlap ;
     pattern_settings. x0     = x0 ;
     pattern_settings. y0     = y0 ;
     pattern_settings. lx     = lx ;
     pattern_settings. ly     = ly ;
-    pattern_settings. side   = side ;
+    pattern_settings. diametre = diametre ;
     pattern_settings. p1     = p1 ;
     pattern_settings. p2     = p2 ;
 }
@@ -88,12 +92,12 @@ void dpps::Pattern_random::set_parametres (
                             const std::vector<long_unsigned_int> &vint,
                             const std::vector<double> &vdouble,
                             const std::vector<std::string> &vstring) {
-    if ((vbool. size () != 0)   ||
+    if ((vbool. size () != 1)   ||
         (vint. size () != 3)    ||
         (vdouble. size () != 7) ||
         (vstring. size () != 0)) {
         throw bad_parametre ("Pattern_random::set_parametres",
-            0, 3, 7, 0,
+            1, 3, 7, 0,
             vbool. size (), vint. size (), vdouble. size (), vstring. size ()) ;
     }
     if (vint[0] >= 10) {
@@ -102,7 +106,7 @@ type is an enum which is valued 0-9, got " + std::to_string (vint[0])} ;
         throw bad_parametre (reason. c_str ()) ;
     }
     set_all_parametres (static_cast<enum_distribution> (vint[0]),
-                        vint[1], vint[2], vdouble[0], vdouble[1], vdouble[2],
+                        vint[1], vint[2], vbool[0], vdouble[0], vdouble[1], vdouble[2],
                         vdouble[3], vdouble[4], vdouble[5], vdouble[6]) ;
 }
 
@@ -141,13 +145,14 @@ void dpps::Pattern_random::generate () {
     p. closed = true ;
     double x {0.0}, y {0.0} ;
     long_unsigned_int i {0}, attempts {0} ;
-    const double s {pattern_settings. side / 2.0} ;
+    //const double s {pattern_settings. side / 2.0} ;
     if (pattern_settings. max_attempts < pattern_settings. number)
         pattern_settings. max_attempts =
             std::numeric_limits<long_unsigned_int>::max () ;
     //std::cout << "hello" << i << " " << pattern_settings. number << " " <<  attempts << " " << pattern_settings. max_attempts << std::endl ;
     while ((i < pattern_settings. number) &&
            (attempts < pattern_settings. max_attempts)) {
+        bool overlap = false ;
         switch (pattern_settings. type) {
             case type_uniform_real_distribution: // 0
                 x = d0 (pseudorandom_generator) ;
@@ -193,15 +198,26 @@ void dpps::Pattern_random::generate () {
             default:
                 break ;
         }
-        // Either we are inside lx, or user set it to negative to disable it.
-        if (((fabs (x - pattern_settings. x0) < pattern_settings. lx / 2.0) ||
+        if (pattern_settings. avoid_overlap) {
+            for (long_unsigned_int j = 0 ; j < polylines. size () ; j++) {
+                if ((polylines[j]. vertices[0] - Vertex(x, y)).norm2_square() <
+                    pattern_settings. diametre*pattern_settings. diametre) {
+                    overlap = true ;
+                    break ;
+                 }
+            }
+        }
+
+        bool within_limits =
+            (((fabs (x - pattern_settings. x0) < pattern_settings. lx / 2.0) ||
              (pattern_settings. lx <= 0)) &&
             ((fabs (y - pattern_settings. y0) < pattern_settings. ly / 2.0) ||
-             (pattern_settings. ly <= 0))) {
-            p. push_back (Vertex (x - s, y - s)) ;
-            p. push_back (Vertex (x - s, y + s)) ;
-            p. push_back (Vertex (x + s, y + s)) ;
-            p. push_back (Vertex (x + s, y - s)) ;
+             (pattern_settings. ly <= 0))) ;
+
+        // Either we are inside lx, or user set it to negative to disable it.
+        if  (within_limits && !overlap) {
+            p. push_back (Vertex (x, y)) ;
+            p. dose = pattern_settings. diametre ;
             polylines. push_back (p) ;
             p. vertices. clear () ; // does not change that p. closed == true ;
             i++ ;

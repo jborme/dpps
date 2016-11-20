@@ -20,8 +20,8 @@ namespace dpps {
 /** @brief Pattern_random is a Pattern derivative that generates a random
  * distribution of elements. Several random distributions are supported,
  * the most important of which are the uniform distribution and the normal
- * distribution. Elements are squares of a certain side. The user can call
- * Pattern::replace_polyline() to replace by the element of his choice.
+ * distribution. Elements are a single dot. The user can call
+ * Pattern::replace_by() to replace the dots by the element of his choice.
  */
 class Pattern_random: public Pattern {
 public:
@@ -62,8 +62,17 @@ public:
         long_unsigned_int number {100} ;
         long_unsigned_int max_attempts {100} ;
 
-        /** @brief The side of the square elements to be added. */
-        short unsigned int side {1} ;
+        /** @brief The diametre of circular elements to be added. Added elements
+         * are single dots, dose is set which can be used as a diametre. This
+         * diametre is also used if avoid_overlaps is true.
+         */
+        double diametre {0.0} ;
+
+        /** @brief Whether the procedure should exclude a newly chosen element
+         * of the random distribution if it overlaps an already-present member,
+         * (overlap is determined based on diametre).
+         * */
+        bool avoid_overlap {false} ;
     } ;
 
 protected:
@@ -92,11 +101,12 @@ public:
         const enum_distribution type,
         const long_unsigned_int number,
         const long_unsigned_int max_attempts,
+        bool avoid_overlap,
         const double x0,
         const double y0,
         const double lx,
         const double ly,
-        const double side,
+        const double diametre,
         const double p1,
         const double p2) ;
     void set_parametres (const std::vector<bool> &vbool,
@@ -109,11 +119,12 @@ public:
         const enum_distribution type,
         const long_unsigned_int number,
         const long_unsigned_int max_attempts,
+        bool avoid_overlap,
         const double x0,
         const double y0,
         const double lx,
         const double ly,
-        const double side,
+        const double diametre,
         const double p1,
         const double p2) ;
 } ;
