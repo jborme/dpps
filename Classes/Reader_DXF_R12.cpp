@@ -64,16 +64,19 @@ void dpps::Reader_DXF_R12::set_all_parametres (
     switch (reader_settings. regex_grammar) {
         case all:
             reader_settings. layers_to_read. clear () ;
+            break ;
         case verbatim:
             // clear first, in case user called more than once
             // set_all_parametres
             reader_settings. layers_to_read. clear () ;
             reader_settings. layers_to_read. push_back (layers_to_read) ;
+            break ;
         case comma_separated_verbatim_list:
             // split_string appends to the vector, so we need to clear first
             reader_settings. layers_to_read. clear () ;
             reader_settings. layers_to_read =
                 split_string (layers_to_read, ',', true) ;
+            break ;
         case regex_ECMAScript:
             flags = std::regex_constants::ECMAScript ;
             break ;

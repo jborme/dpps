@@ -185,33 +185,45 @@ bool dpps::Reader_image::acquire_polyline_x (Polyline &p) {
                                     begin_col, end_col) ;
         current_col = end_col + 1 ;
     }
-    if (begin_col == end_col) {
-        //switch (reader_settings. action_dot) {
-        //    case 0:
-        //        p. push_back (Vertex (
-        //            minx + (1.0*reader_settings. size * begin_col),
-        //            maxy - (1.0*reader_settings. size * current_row))) ;
-        //        break ;
-        //    case 1:
-                p. push_back (Vertex (
-                    minx + (1.0*reader_settings. size * begin_col),
-                    maxy - (1.0*reader_settings. size * current_row))) ;
-                p. push_back (Vertex (
-                    minx + (1.0*reader_settings. size * (begin_col+0.5)),
-                    p. vertices. back (). y)) ;
-        //        break ;
-        //   case 2:  // nothing to do
-        //   default: // already checked
-        //       break ;
-        //}
-    }
-    else {
-        p. push_back (Vertex (
-            minx + (1.0*reader_settings. size * begin_col),
-            maxy - (1.0*reader_settings. size * current_row))) ;
-        p. push_back (Vertex (
-            minx + (1.0*reader_settings. size * end_col),
-            p. vertices. back (). y)) ;
+    double
+        x1 {minx + (1.0*reader_settings. size * begin_col)},
+        x2 {minx + (1.0*reader_settings. size * end_col)},
+        y  {maxy - (1.0*reader_settings. size * current_row)},
+        s2 {reader_settings. size / 2.0} ;
+    switch (reader_settings. mode) {
+        case image_reader_import_x_lines:
+            if (begin_col == end_col) {
+                //switch (reader_settings. action_dot) {
+                //    case 0:
+                //        p. push_back (Vertex (
+                //            minx + (1.0*reader_settings. size * begin_col),
+                //            maxy - (1.0*reader_settings. size * current_row))) ;
+                //        break ;
+                //    case 1:
+                        p. push_back (Vertex (x1, y)) ;
+                        p. push_back (Vertex (x1+s2, y)) ;
+                            //minx + (1.0*reader_settings. size * (begin_col+0.5)),
+                            //p. vertices. back (). y)
+                //        break ;
+                //   case 2:  // nothing to do
+                //   default: // already checked
+                //       break ;
+                //}
+            }
+            else {
+                p. push_back (Vertex (x1, y)) ;
+                p. push_back (Vertex (x2, y)) ;
+            }
+            break ;
+        case image_reader_import_x_rectangles:
+            p. push_back(x1-s2, y-s2) ;
+            p. push_back(x2+s2, y-s2) ;
+            p. push_back(x2+s2, y+s2) ;
+            p. push_back(x1-s2, y+s2) ;
+            p. set_closure (true) ;
+            break ;
+        default: // should not happen
+            break ;
     }
     return true ;
 }
@@ -235,34 +247,48 @@ bool dpps::Reader_image::acquire_polyline_y (Polyline &p) {
                                     begin_row, end_row) ;
         current_row = end_row + 1 ;
     }
-    if (begin_row == end_row) {
-        //switch (reader_settings. action_dot) {
-        //    case 0:
-        //        p. push_back (Vertex (
-        //            minx + (1.0*reader_settings. size * current_col),
-        //            maxy - (1.0*reader_settings. size * begin_row))) ;
-        //        break ;
-        //    case 1:
-                p. push_back (Vertex (
-                    minx + (1.0*reader_settings. size * current_col),
-                    maxy - (1.0*reader_settings. size * begin_row))) ;
-                p. push_back (Vertex (
-                    p. vertices. back (). x,
-                    maxy - (1.0*reader_settings. size * (begin_row+0.5)))) ;
-        //        break ;
-        //    case 2:
-        //    default:
-        //        break ;
-        //}
+    double
+        y1 {maxy - (1.0*reader_settings. size * begin_row)},
+        y2 {maxy - (1.0*reader_settings. size * end_row)},
+        x  {minx + (1.0*reader_settings. size * current_col)},
+        s2 {reader_settings. size / 2.0} ;
+    switch (reader_settings. mode) {
+        case image_reader_import_x_lines:
+            if (begin_row == end_row) {
+                //switch (reader_settings. action_dot) {
+                //    case 0:
+                //        p. push_back (Vertex (
+                //            minx + (1.0*reader_settings. size * current_col),
+                //            maxy - (1.0*reader_settings. size * begin_row))) ;
+                //        break ;
+                //    case 1:
+                        p. push_back (Vertex (
+                            minx + (1.0*reader_settings. size * current_col),
+                            maxy - (1.0*reader_settings. size * begin_row))) ;
+                        p. push_back (Vertex (
+                            p. vertices. back (). x,
+                            maxy - (1.0*reader_settings. size * (begin_row+0.5)))) ;
+                //        break ;
+                //    case 2:
+                //    default:
+                //        break ;
+                //}
 
-    }
-    else {
-        p. push_back (Vertex (
-            minx + (1.0*reader_settings. size * current_col),
-            maxy - (1.0*reader_settings. size * begin_row))) ;
-        p. push_back (Vertex (
-            p. vertices. back (). x,
-            maxy - (1.0*reader_settings. size * end_row))) ;
+            }
+            else {
+                p. push_back (Vertex (x, y1)) ;
+                p. push_back (Vertex (x, y2)) ;
+            }
+            break;
+        case image_reader_import_y_rectangles:
+            p. push_back(x-s2, y1-s2) ;
+            p. push_back(x+s2, y1-s2) ;
+            p. push_back(x+s2, y2+s2) ;
+            p. push_back(x-s2, y2+s2) ;
+            p. set_closure (true) ;
+            break ;
+        default: // should not happen
+            break ;
     }
     return true ;
 }
@@ -282,9 +308,24 @@ bool dpps::Reader_image::acquire_dot (Polyline &p) {
         current_col++ ;
     }
     p. vertices. clear () ;
-    p. push_back (Vertex (
+    double s2 {reader_settings. mode/2.0} ;
+    Vertex V (
         minx + (1.0*reader_settings. size * current_col),
-        maxy - (1.0*reader_settings. size * current_row))) ;
+        maxy - (1.0*reader_settings. size * current_row)) ;
+    switch (reader_settings. mode) {
+        case image_reader_import_squares:
+            p. push_back (V + Vertex (-s2, -s2)) ;
+            p. push_back (V + Vertex (s2, -s2)) ;
+            p. push_back (V + Vertex (s2, s2)) ;
+            p. push_back (V + Vertex (-s2, s2)) ;
+            p. set_closure (true) ;
+            break ;
+        case image_reader_import_dots:
+            p. push_back (V) ;
+            break ;
+        default: // should not happen
+            break ;
+    }
     return true ;
 }
 
@@ -299,14 +340,17 @@ bool dpps::Reader_image::read_polyline (Polyline &p) {
     p. vertices. clear () ;
     switch (reader_settings. mode) {
         case image_reader_import_x_lines:
+        case image_reader_import_x_rectangles:
             value = acquire_polyline_x (p) ;
             break ;
         case image_reader_import_y_lines:
+        case image_reader_import_y_rectangles:
             value = acquire_polyline_y (p) ;
             break ;
         case image_reader_import_dots:
+        case image_reader_import_squares:
             value = acquire_dot (p) ;
-        default: // already filtered above,
+        default: // already filtered above
             break ;
     }
 

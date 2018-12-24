@@ -1003,7 +1003,10 @@ public:
     typedef enum {
         image_reader_import_x_lines,
         image_reader_import_y_lines,
-        image_reader_import_dots
+        image_reader_import_dots,
+        image_reader_import_x_rectangles,
+        image_reader_import_y_rectangles,
+        image_reader_import_squares
     } enum_image_reader_mode ;
 class Reader_image: public Reader {
 public:
