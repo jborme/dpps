@@ -122,6 +122,11 @@ protected:
 public:
     ~Writer_DXF_R12 () ;
     static const long_unsigned_int min_handle {581} ;
+    /** @brief The maximum number of digits in DXF numbers. Setting to
+      * 9 so that distances up to 1 m can be addressed within 1 nm
+      * precision.
+      * */
+    const int precision {9} ;
     // Implementation of inherited virtual functions.
     // The public interface is the same as the parent class, as we want the
     // main program to handle Writer derivatives generically.

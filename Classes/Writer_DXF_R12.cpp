@@ -27,6 +27,7 @@
 #include "bad_io.hh"
 
 #include <ctime>
+#include <iomanip>
 
 dpps::Writer_DXF_R12::~Writer_DXF_R12 () {
     if (open)
@@ -345,6 +346,7 @@ void dpps::Writer_DXF_R12::write_dxf_circle (const double x,
     // there is a 0 only in the end.
     tmpfile << "CIRCLE\n  5\n" << std::hex << handle
          << "\n  8\n" << layer_names. at (layer_number)
+         << std::setprecision (precision)
          << "\n 10\n" << rounding_zero (x) << "\n 20\n" << rounding_zero (y) << "\n 30\n0.0"
          << "\n 40\n" << rounding_zero (radius) << "\n  0\n" ;
     handle++ ;
@@ -356,6 +358,7 @@ void dpps::Writer_DXF_R12::write_dxf_point (const double x,
     // there is a 0 only in the end.
     tmpfile << "POINT\n  5\n" << std::hex << handle
          << "\n  8\n" << layer_names. at (layer_number)
+         << std::setprecision (precision)
          << "\n 10\n" << rounding_zero (x) << "\n 20\n" << rounding_zero (y) << "\n 30\n0.0\n  0\n" ;
     handle++ ;
 }
@@ -366,6 +369,7 @@ void dpps::Writer_DXF_R12::write_dxf_line (
     const long_unsigned_int layer_number) {
     tmpfile << "LINE\n  5\n" << std::hex << handle
          << "\n  8\n" << layer_names. at (layer_number)
+         << std::setprecision (precision)
          << "\n 10\n" << rounding_zero (x1) << "\n 20\n" << rounding_zero (y1) << "\n 30\n0.0"
          << "\n 11\n" << rounding_zero (x2) << "\n 21\n" << rounding_zero (y2) << "\n 31\n0.0\n  0\n" ;
     handle++ ;
@@ -387,6 +391,7 @@ void dpps::Writer_DXF_R12::write_dxf_vertex (
     const long_unsigned_int layer_number) {
   tmpfile << "VERTEX\n  5\n" << std::hex << handle
        << "\n  8\n" << layer_names. at (layer_number)
+       << std::setprecision (precision)
        << "\n 10\n" << rounding_zero (x) << "\n 20\n" << rounding_zero (y) << "\n 30\n0.0\n  0\n" ;
   handle++ ;
 }
