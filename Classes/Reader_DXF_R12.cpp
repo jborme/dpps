@@ -76,6 +76,7 @@ void dpps::Reader_DXF_R12::set_all_parametres (
             reader_settings. layers_to_read. clear () ;
             reader_settings. layers_to_read =
                 split_string (layers_to_read, ',', true) ;
+            layers_read. resize (reader_settings. layers_to_read. size()) ;
             break ;
         case regex_ECMAScript:
             flags = std::regex_constants::ECMAScript ;
@@ -221,6 +222,9 @@ bool dpps::Reader_DXF_R12::get_field_value (std::istream &scan_file,
     //std::cout << "field " << field << " value " << value << std::endl ;
     return true ;
 }
+
+/** Returns true if the layer is NOT in our list, and that therefore we will be
+ * looking for another polyline */
 bool dpps::Reader_DXF_R12::manage_layer (std::string &string_value) {
     sanitize_EOL (string_value) ;
     //std::cerr << "we have layer " << string_value << "\n" << std::flush; //***
@@ -253,23 +257,36 @@ bool dpps::Reader_DXF_R12::manage_layer (std::string &string_value) {
     return false ;
 }
 
+/** Returns the reference to be used with the object (polyline, line, point, circle) */
 long_unsigned_int dpps::Reader_DXF_R12::manage_reference (
     std::vector<std::string> &layers_read,
     std::string &polyline_layer) {
-    auto pos = std::find (layers_read. cbegin (),
-                                 layers_read. cend (), polyline_layer) ;
     //std::cout << "manage reference:\n";
-    if (pos == layers_read. cend ()) {
-        layers_read. push_back (polyline_layer) ;
-        if (reader_settings. set_reference_from_layer) {
-            //std::cerr <<  "layer " << polyline_layer << " reference " << layers_read. size () - 1 << "\n";
-            return layers_read. size () - 1;
-        }
+    if (reader_settings. regex_grammar == comma_separated_verbatim_list) {
+      // In this case, we respect the order of layers provided by the user.
+      // It should not happen that pos == cend() because manage_layers() was
+      // called so we know for sure this layer is in our list.
+      auto pos = std::find (reader_settings. layers_to_read. cbegin (),
+                            reader_settings. layers_to_read. cend (),
+                                 polyline_layer) ;
+      long_unsigned_int n = distance (reader_settings. layers_to_read. cbegin (), pos) ;
+      layers_read.at(n) = polyline_layer ;
+      return n ;
     } else {
-        if (reader_settings. set_reference_from_layer) {
-            //std::cerr <<  "layer " << polyline_layer << " reference " << layers_read. size () - 1 << "\n";
-            return distance (layers_read. cbegin (), pos) ;
-        }
+      auto pos = std::find (layers_read. cbegin (),
+                                 layers_read. cend (), polyline_layer) ;
+      if (pos == layers_read. cend ()) {
+          layers_read. push_back (polyline_layer) ;
+          if (reader_settings. set_reference_from_layer) {
+              //std::cerr <<  "layer " << polyline_layer << " reference " << layers_read. size () - 1 << "\n";
+              return layers_read. size () - 1;
+          }
+      } else {
+          if (reader_settings. set_reference_from_layer) {
+              //std::cerr <<  "layer " << polyline_layer << " reference " << layers_read. size () - 1 << "\n";
+              return distance (layers_read. cbegin (), pos) ;
+          }
+      }
     }
     //std::cerr <<  "layer " << polyline_layer << " reference will be zero\n";
     return 0 ;
@@ -532,7 +549,14 @@ bool dpps::Reader_DXF_R12::read_polyline (Polyline &p) {
     // unreachable
     return false ;
 }
-
+/** Returns the layers effectively read.
+ *
+ * In case of comma_separated_verbatim_list, the size and order of the layers in
+ * the list is the same. Empty positions in the returned value of get_layers_read()
+ * can result from not having elements of a particular layer in the original list.
+ * In all other cases, the layers are entered in the order they appear in the
+ * file, and no empty layers are reported.
+ */
 std::vector<std::string> dpps::Reader_DXF_R12::get_layers_read () const {
 //     std::cout << "here the layers : ";
 //     for (auto &s: layers_read)
