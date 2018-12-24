@@ -113,6 +113,11 @@ class Pattern_text: public Pattern {
         /** @brief the size of the font expressed in height of the x.
          */
         double ex {10.0} ;
+
+        /** @brief set to true when the font name has changed, so font is
+         * loaded again.
+         */
+        bool font_changed {true} ;
     } ;
 protected:
     Pattern_text_settings pattern_settings ;
@@ -152,6 +157,12 @@ public:
                          const std::vector<double> &vdouble,
                          const std::vector<std::string> &vstring) ;
 
+    void set_text (const std::string &text) ;
+    void set_font (const std::string &font_name) ;
+    void set_x (const double x) ;
+    void set_y (const double y) ;
+    void set_ex (const double ex) ;
+
     void generate () ;
     void set_all_parametres (
         const bool utf8,
@@ -180,9 +191,6 @@ public:
 
     //
     //bool font_exists (const std::string &font_name) ;
-
-    //TODO FIXME BUG NOTE
-    // Create a dirty flag to enable reuse of font.
 } ;
 } // namespace dpps
 #endif

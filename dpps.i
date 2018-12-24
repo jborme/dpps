@@ -823,6 +823,11 @@ public:
 //                          const vector<long_unsigned_int> &vint,
 //                          const vector<double> &vdouble,
 //                          const vector<string> &vstring) ;
+    void set_text (const std::string &text) ;
+    void set_font (const std::string &font_name) ;
+    void set_x (const double x) ;
+    void set_y (const double y) ;
+    void set_ex (const double ex) ;
     void generate () ;
     void set_all_parametres (
         const bool utf8,

@@ -1404,26 +1404,31 @@ void dpps::Polyline::cut_into (Polyline p,
         vertices. insert (vertices. begin() + pos_this, p. vertices. begin(), p. vertices. end()) ;
         return ;
     }
-    // We are now sure that both *this and b have at least 3 vertices.
+    // We are now sure that both *this and p have at least 3 vertices.
     bool reverse {false} ;
     if (reverse_auto) {
         // We must join the dots in a way to not cross the lines.
         // We will go from
+        Vertex vertex_before ;
+        if (pos_this == 0)
+            vertex_before = vertices. back() ;
+        else
+            vertex_before = vertices[pos_this-1] ;
 
-        std::cout << "this = " << display_string() << "\n" ;
-        std::cout << "p = " << p. display_string() << "\n" ;
-        std::cout << "uv (this " << pos_this << ", p 0) = (" << vertices[pos_this]. display_string () << ", " << p. vertices. front(). display_string() << ")\n" ;
-        std::cout << "wz (this " << pos_this-1 << ", p " << p. vertices. size()-2 << ") = (" << vertices[pos_this-1]. display_string () << ", " << p. vertices[p. vertices. size()-2]. display_string() << ")\n" ;
+        // std::cout << "this = " << display_string() << "\n" ;
+        // std::cout << "p = " << p. display_string() << "\n" ;
+        // std::cout << "uv (this " << pos_this << ", p 0) = (" << vertices[pos_this]. display_string () << ", " << p. vertices. front(). display_string() << ")\n" ;
+        // std::cout << "wz (this " << pos_this-1 << ", p " << p. vertices. size()-2 << ") = (" << vertex_before. display_string () << ", " << p. vertices[p. vertices. size()-2]. display_string() << ")\n" ;
         reverse = Vertex::intersects( // tests whether [uv] intersects [wz]
             vertices[pos_this],   p. vertices. front(), // uv
-            vertices[pos_this-1], p. vertices[p. vertices. size()-2]) ; //wz
-        std::cout << reverse << "\n" ;
+            vertex_before, p. vertices[p. vertices. size()-2]) ; //wz
+        // std::cout << reverse << "\n" ;
         /*
         Vertex dir1, dir2 ;
         if ((pos_this == 0) || (pos_this == size()))
             dir1 = vertices. front () - vertices. back () ;
         else
-            dir1 = vertices[pos_this] - vertices[pos_this-1] ;
+            dir1 = vertices[pos_this] - vertex_before ;
         dir2 = p. vertices[1] - p. vertices[0] ;
         reverse = (dir1*dir2 > 0) ;
         */
@@ -1432,7 +1437,7 @@ void dpps::Polyline::cut_into (Polyline p,
     vertices. insert (vertices. begin () + pos_this, vertices. begin () + pos_this, vertices. begin () + pos_this + 1) ;
     pos_this++ ;
     insert (p, pos_this, reverse) ;
-    std::cout << "final = " << display_string() << "\n" ;
+    // std::cout << "final = " << display_string() << "\n" ;
 }
 
 void dpps::Polyline::cut_into (Polyline p, const bool reverse_auto) {
@@ -1458,11 +1463,17 @@ void dpps::Polyline::cut_into (Polyline p, const bool reverse_auto) {
                 min_distance_square = dist ;
                 pos_this = i ;
                 pos_p = j ;
+                /*if (reverse_auto) {
+                    if (pos_this == 0)
+                        pos_this = 1;
+                    if (pos_p == 0)
+                        pos_p = 1;
+                }*/
             }
         }
-//     std::cout << "Smallest distance : " << min_distance_square << "\n" ;
-//     std::cout << "pos_this = " << pos_this << " = " << vertices[pos_this].display_string() << "\n" ;
-//     std::cout << "pos_p = " << pos_p << " = " << p.vertices[pos_p].display_string() << "\n" ;
+    // std::cout << "Smallest distance : " << min_distance_square << "\n" ;
+    // std::cout << "pos_this = " << pos_this << " = " << vertices[pos_this].display_string() << "\n" ;
+    // std::cout << "pos_p = " << pos_p << " = " << p.vertices[pos_p].display_string() << "\n" ;
     cut_into (p, pos_this, pos_p, reverse_auto) ;
 }
 

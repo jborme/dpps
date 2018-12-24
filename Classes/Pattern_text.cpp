@@ -89,8 +89,8 @@ void dpps::Pattern_text::set_all_parametres (
     pattern_settings. x0 = x0 ;
     pattern_settings. y0 = y0 ;
     pattern_settings. ex = ex ;
-    pattern_settings. text = text ;
-    pattern_settings. font_name =  font_name ;
+    set_text (text) ;
+    set_font (font_name) ;
     pattern_settings. variant = variant ;
     pattern_settings. align_x = align_x ;
     pattern_settings. align_y = align_y ;
@@ -121,6 +121,27 @@ Bold Italic (6), but value " +
         std::to_string (pattern_settings. variant) + " was provided"} ;
         throw bad_parametre (reason. c_str ()) ;
     } ;
+}
+
+void dpps::Pattern_text::set_text (const std::string &text) {
+    pattern_settings. text = text ;
+}
+
+void dpps::Pattern_text::set_font (const std::string &font_name) {
+    pattern_settings. font_name =  font_name ;
+    pattern_settings. font_changed = true ;
+}
+
+void dpps::Pattern_text::set_x (const double x) {
+    pattern_settings. x0 =  x ;
+}
+
+void dpps::Pattern_text::set_y (const double y) {
+    pattern_settings. y0 =  y ;
+}
+
+void dpps::Pattern_text::set_ex (const double ex) {
+    pattern_settings. ex =  ex ;
 }
 
 void dpps::Pattern_text::set_parametres (
@@ -189,10 +210,12 @@ void dpps::Pattern_text::generate () {
     else
         copy = pattern_settings. text ;
 
-    font. set_font (pattern_settings. font_name) ;
-    font. set_variant (pattern_settings. variant) ;
-    font. set_stroke_type (pattern_settings. stroke) ;
-    font. load () ;
+    if (pattern_settings. font_changed || (!font. get_loaded ())) {
+        font. set_font (pattern_settings. font_name) ;
+        font. set_variant (pattern_settings. variant) ;
+        font. set_stroke_type (pattern_settings. stroke) ;
+        font. load () ;
+    }
 
     double bottom {std::numeric_limits<double>::max()} ;
     double top {std::numeric_limits<double>::lowest()} ;
@@ -228,9 +251,14 @@ void dpps::Pattern_text::generate () {
             top = font. top [ic] ;
         if (font. bottom [ic] < bottom)
             bottom = font. bottom [ic] ;
+        double left_letter {std::numeric_limits<double>::max()} ;
         for (auto p: letter) {
-            p = p * ratio ;
-            p = p + Vertex (caret, 0.0) ;
+            double x0 {p. minimum_x ()} ;
+            if (x0 < left_letter)
+                left_letter = x0 ;
+        }
+        for (auto p: letter) {
+            p = ((p + Vertex (-left_letter, 0)) * ratio) + Vertex (caret, 0.0) ;
             left_aligned_text. push_back (p) ;
         }
         width = caret + ratio * font. right [ic] ;

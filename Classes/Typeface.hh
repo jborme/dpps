@@ -31,7 +31,11 @@ namespace dpps {
         continuous
     } stroke_type ;
 
-/** @brief A class to encapsulate a typeface */
+/** @brief A class to encapsulate a typeface.
+ * Its purpose is to load a special DXF file which contains the description
+ * of the characters as polylines.
+ * The codepoints correspond to ISO-8859-1 (latin-1).
+ */
 class Typeface {
     friend class Pattern_text ;
 protected:
@@ -42,7 +46,8 @@ protected:
 
     bool get_next_line_vector (std::istream &scan_file,
                          std::vector <short signed int> &vector_target) ;
-    Pattern create_character (std::vector<short signed int> &vararg, Pattern &original, long_unsigned_int &current) ;
+    Pattern create_character_composition (std::vector<short signed int> &vararg, Pattern &original, long_unsigned_int &current) ;
+    Pattern create_character (Pattern &original, long_unsigned_int &current) ;
 
     // The protected things below are accessed from Pattern_text
     alphabet_iso8859_1_polyline font ;
@@ -58,6 +63,7 @@ public:
     void set_font (const std::string &font_value) ;
     void set_variant (const short unsigned int variant_value) ;
     void set_stroke_type (const stroke_type stroke_value) ;
+    bool get_loaded () const ;
 
     std::string get_font () const ;
     short unsigned int get_variant () const ;
