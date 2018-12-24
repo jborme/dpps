@@ -235,20 +235,20 @@ std::string dpps::comma_separated_string_from_vector (const std::vector<std::str
 }
 
 void dpps::check_selection_not_negative_not_too_high(selection_t selection) {
-    if ((selection < 0) || (selection >= polyline_max_selection)) {
+    if ((static_cast<int> (selection) < 0) || (static_cast<int> (selection) >= polyline_max_selection)) {
         std::string reason {"Selection values " +
-std::to_string ((long_unsigned_int)selection)
+std::to_string (static_cast<int> (selection))
 + " but at this place it is not allowed to be negative or greater than the \
 compile-time maximum, " +
-        std::to_string ((long_unsigned_int)polyline_max_selection) + "."} ;
+        std::to_string (polyline_max_selection) + "."} ;
         throw bad_parametre (reason. c_str ()) ;
     }
 }
 
 void dpps::check_selection_not_too_high(selection_t selection) {
-    if (selection >= polyline_max_selection) {
+    if (static_cast<int> (selection) >= polyline_max_selection) {
         std::string reason {"Selection values " +
-std::to_string ((long_unsigned_int)selection)
+std::to_string (static_cast<int> (selection))
 + " but at this place it is not allowed to be greater than the \
 compile-time maximum, " + std::to_string ((long_unsigned_int)polyline_max_selection) + "."} ;
         throw bad_parametre (reason. c_str ()) ;

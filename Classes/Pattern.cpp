@@ -314,10 +314,6 @@ check_selection_not_negative_not_too_high(selection) ;
                     (1.0 * pseudorandom_distribution (pseudorandom_generator))
                     / (1.0 * large_number) <= fraction) ;
         }) ;
-//     for (auto &p : polylines)
-//         p. selected [selection] = (
-//                 (1.0 * pseudorandom_distribution (pseudorandom_generator))
-//                  / (1.0 * large_number) <= fraction) ;
 }
 
 long_unsigned_int dpps::Pattern::size (
@@ -1207,7 +1203,11 @@ check_selection_not_too_high(selection) ;
 }
 
 void dpps::Pattern::erase (const selection_t selection) {
-check_selection_not_too_high(selection) ;
+    check_selection_not_too_high(selection) ;
+    if (selection < 0) {
+        polylines. clear () ;
+        return ;
+    }
     long_unsigned_int number = size (selection) ;
     if (number == 0)
         return ;
