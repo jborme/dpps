@@ -104,6 +104,8 @@ if (LUA_FOUND)
         "-llua"
     )
     add_definitions (${LUA_DIR})
+    # add_definitions ("-I /usr/include/lua5.2")
+    message ("-- Found lua" ${LUA_DIR})
 else ()
     message (FATAL_ERROR "-- Looking for lua - not found.")
 endif ()
