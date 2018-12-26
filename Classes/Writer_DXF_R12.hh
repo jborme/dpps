@@ -90,6 +90,8 @@ protected:
     Vertex lower_left, upper_right ;
 
     std::vector<std::string> layer_names ;
+
+    std::vector<int> layer_colours ;
    /** handles have some minimum. I do not know the minimum limit. One file I
     *  tested that contained 3 POLYLINEs had the first polylines and vertices
     *  start at 0x285 == 581.
@@ -140,7 +142,8 @@ public:
         const bool two_point_line_as_polyline,
         const enum_dot_dxf_export dot_dxf_export,
         const double julian_date,
-        const std::string &layer_name_parametre) ;
+        const std::string &layer_name_parametre,
+        const std::string &layer_colour_parametre) ;
     void write_Pattern (const Pattern &pattern) ;
     void write_Pattern_selected (const Pattern &pattern, const selection_t selection = 0) ;
     void write_footer () ;
@@ -155,7 +158,8 @@ public:
         const bool two_point_line_as_polyline,
         const enum_dot_dxf_export dot_dxf_export,
         const double julian_date,
-        const std::string &layer_name_parametre) ;
+        const std::string &layer_name_parametre,
+        const std::string &layer_colour_parametre) ;
 } ;
 } // namespace dpps
 #endif

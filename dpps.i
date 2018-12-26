@@ -1132,13 +1132,16 @@ public:
         const bool two_point_line_as_polyline,
         const enum_dot_dxf_export dot_dxf_export,
         const double julian_date,
-        const char *layer_name_parametre) ;
+        const char *layer_name_parametre,
+        const char *layer_colour_parametre) ;
     void write_Polyline (const Polyline &polyline) ;
     void set_all_parametres (
         const bool two_point_line_as_polyline,
         const enum_dot_dxf_export dot_dxf_export,
         const double julian_date,
-        const char *layer_name_parametre) ;
+        const char *layer_name_parametre,
+        const char *layer_colour_parametre
+                            ) ;
 } ;
 
 class Writer_SVG: public Writer {

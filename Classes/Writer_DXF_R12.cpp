@@ -27,6 +27,7 @@
 #include "bad_io.hh"
 
 #include <ctime>
+#include <cstdlib>
 #include <iomanip>
 
 dpps::Writer_DXF_R12::~Writer_DXF_R12 () {
@@ -47,10 +48,11 @@ dpps::Writer_DXF_R12::Writer_DXF_R12 (
     const bool two_point_line_as_polyline,
     const enum_dot_dxf_export dot_dxf_export,
     const double julian_date,
-    const std::string &layer_name_parametre):
+    const std::string &layer_name_parametre,
+    const std::string &layer_colour_parametre):
     Writer_DXF_R12 (set_filename, append) {
     set_all_parametres (/*dot_as_polyline,*/ two_point_line_as_polyline, dot_dxf_export,
-                        julian_date, layer_name_parametre) ;
+                        julian_date, layer_name_parametre, layer_colour_parametre) ;
     }
 
 ////////////////////////////////////////////////////////////////////////
@@ -173,11 +175,12 @@ $MIRRTEXT\n 70\n     0\n  9\n$DRAGMODE\n 70\n     2\n  9\n$LTSCALE\n 40\n1.0\
     // Layer 0
     << "LAYER\n  2\n0\n 70\n     0\n 62\n     7\n  6\nCONTINUOUS\n  0\n" ;
     // User layers
-    long_unsigned_int i {1} ;
+    long_unsigned_int i {0} ;
     for (auto name: layer_names) {
         file << "LAYER\n  2\n" << name << "\n 70\n     0\n"
-             <<" 62\n     " << i++ << "\n  6\nCONTINUOUS\n  0\n" ;
-             // code 62 is the colour. We just increment it.
+             <<" 62\n     " << layer_colours. at(i)
+             << "\n  6\nCONTINUOUS\n  0\n" ;
+             i++;
     }
     file << "ENDTAB\n  0\n"
 
@@ -231,7 +234,8 @@ void dpps::Writer_DXF_R12::set_all_parametres (
     const bool two_point_line_as_polyline,
     const enum_dot_dxf_export dot_dxf_export,
     const double julian_date,
-    const std::string &layer_name_parametre) {
+    const std::string &layer_name_parametre,
+    const std::string &layer_colour_parametre) {
 
     if (julian_date >= 0)
         writer_settings. julian_date = julian_date ;
@@ -258,6 +262,22 @@ void dpps::Writer_DXF_R12::set_all_parametres (
     if (layer_names. size () == 0) {
         std::string reason {"Writer_DXF_R12::set_all_parametres, layer name \
 set to null"} ;
+        throw bad_parametre (reason. c_str ()) ;
+    }
+    if (layer_colour_parametre. empty()) {
+        long_unsigned_int i {0} ;
+        for (auto name: layer_names) {
+            layer_colours. push_back (i) ;
+            i++ ;
+        }
+    } else {
+        std::vector<std::string> vector_colour_string {split_string (layer_colour_parametre, ',', true)} ;
+        for (auto colour: vector_colour_string)
+            layer_colours. push_back (std::strtol(colour. c_str(), nullptr, 10)) ;
+    }
+    if (layer_colours. size() < layer_names. size ()) {
+        std::string reason {"Writer_DXF_R12::set_all_parametres, layer colours \
+are not enough for all layers"} ;
         throw bad_parametre (reason. c_str ()) ;
     }
     for (auto &s : layer_names) {
@@ -287,9 +307,9 @@ void dpps::Writer_DXF_R12::set_parametres (
     if ((vbool. size () != 1)   ||
         (vint. size () != 1)    ||
         (vdouble. size () != 1) ||
-        (vstring. size () != 1)) {
+        (vstring. size () != 2)) {
         throw bad_parametre ("Writer_DXF_R12::set_parametres",
-            2, 1, 1, 1,
+            1, 1, 1, 2,
             vbool. size (), vint. size (), vdouble. size (), vstring. size ()) ;
     }
     if (vint. at (0) > 2) {
@@ -301,7 +321,7 @@ dot_dxf_export can value 0 (dot_as_dot), 1 (dot_as_polyline), 2 \
 
     set_all_parametres (vbool. at (0),
                         static_cast<enum_dot_dxf_export>(vint. at (0)),
-                        vdouble. at (0), vstring. at (0)) ;
+                        vdouble. at (0), vstring. at (0), vstring. at (1)) ;
 }
 
 void dpps::Writer_DXF_R12::write_Polyline (const Polyline &polyline) {
