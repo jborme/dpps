@@ -390,16 +390,16 @@ public:
          const long_unsigned_int parametre,
          const enum_comparison_operator comparison_operator,
          const long_unsigned_int comparison_value,
-         const selection_t selection = -1) ;
+         const selection_t selection = 0) ;
     void select_double_property (
                   const enum_double_property property,
                   const long_unsigned_int parametre,
                   const enum_comparison_operator comparison_operator,
                   const double comparison_value,
                   double tolerance,
-                  const selection_t selection = -1) ;
+                  const selection_t selection = 0) ;
     void select_uniform_pseudorandom (const double fraction,
-                                      const selection_t selection = -1) ;
+                                      const selection_t selection = 0) ;
     void selection_logical_operation (
                   const selection_t destination_selection,
                   const selection_t selection_p,
