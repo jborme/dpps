@@ -204,6 +204,15 @@ public:
     void select (const enum_logical_action action,
                  const selection_t selection) ;
 
+    /** @brief selects entities whose bounding box is entirely contained within
+     *  the window. */
+    void select_window (const double xmin, const double ymin,
+                        const double xmax, const double ymax,
+                        const bool dots_as_circles = true,
+                        const selection_t selection = 0) ;
+
+    void select_window (const Vertex &min, const Vertex &max) ;
+
     /** @brief Adds to the current selection a range of polylines in the Pattern
      * with their number. Minimum range value is 1, maximum value is size().
      *

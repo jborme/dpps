@@ -384,7 +384,11 @@ public:
     //long_unsigned_int size_all () const ;
     void select (const enum_logical_action action,
                  const selection_t selection) ;
-
+    void select_window (const double xmin, const double ymin,
+                        const double xmax, const double ymax,
+                        const bool dots_as_cricles = true,
+                        const selection_t selection = 0) ;
+    void select_window (const Vertex &min, const Vertex &max) ;
     void select_integer_property (
          const enum_integer_property property,
          const long_unsigned_int parametre,

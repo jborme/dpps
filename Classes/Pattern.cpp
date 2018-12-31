@@ -132,6 +132,36 @@ check_selection_not_negative_not_too_high(selection) ; ;
     }
 }
 
+void dpps::Pattern::select_window (const double xmin, const double ymin,
+                        const double xmax, const double ymax,
+                        const bool dots_as_circles,
+                        const selection_t selection) {
+check_selection_not_negative_not_too_high(selection) ;
+    double temp_min_x {0.0} ;
+    double temp_min_y {0.0} ;
+    double temp_max_x {0.0} ;
+    double temp_max_y {0.0} ;
+    for (auto &p : polylines) {
+        if (dots_as_circles && (p.size() == 1)) {
+            temp_min_x = p.vertices[0].x-p.dose;
+            temp_min_y = p.vertices[0].y-p.dose;
+            temp_max_x = p.vertices[0].x+p.dose;
+            temp_max_y = p.vertices[0].y+p.dose;
+        } else
+            p.limits (temp_min_x, temp_min_y, temp_max_x, temp_max_y) ;
+        if ((temp_min_x >= xmin) && (temp_min_x <= xmax) &&
+            (temp_min_y >= ymin) && (temp_min_y <= ymax) &&
+            (temp_max_x >= xmin) && (temp_max_x <= xmax) &&
+            (temp_max_y >= ymin) && (temp_max_y <= ymax)) {
+            p. selected [selection] = true ;
+        }
+    }
+}
+
+void dpps::Pattern::select_window (const Vertex &min, const Vertex &max) {
+    select_window (min. x, min. y, max. x, max. y) ;
+}
+
 void dpps::Pattern::selection_next (const selection_t origin_selection,
                            const selection_t destination_selection,
                            const bool unselect_origin) {
@@ -1723,13 +1753,13 @@ check_selection_not_too_high(selection) ;
         for (auto &p : polylines) {
             if ((selection < 0) || (p. selected[selection])) {
                 double temp_min_x, temp_min_y, temp_max_x, temp_max_y ;
-                if ((p.size() == 1) && dots_as_circles) {
+                if (dots_as_circles && (p.size() == 1)) {
                     temp_min_x = p.vertices[0].x-p.dose;
                     temp_min_y = p.vertices[0].y-p.dose;
                     temp_max_x = p.vertices[0].x+p.dose;
                     temp_max_y = p.vertices[0].y+p.dose;
                 } else
-                    p.limits (temp_min_x, temp_min_y, temp_max_x, temp_max_y);
+                    p.limits (temp_min_x, temp_min_y, temp_max_x, temp_max_y) ;
                 if (temp_min_x < minimum_x)
                     minimum_x = temp_min_x ;
                 if (temp_min_y < minimum_y)
