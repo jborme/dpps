@@ -1334,10 +1334,17 @@ dpps::Polyline dpps::Pattern::pop_back () {
     return result ;
 }
 
-void dpps::Pattern::append_from (const Pattern &pattern) {
-    polylines. insert (polylines. end (),
+void dpps::Pattern::append_from (const Pattern &pattern,
+                                 const selection_t selection) {
+check_selection_not_too_high(selection) ;
+    if (selection == -1)
+        polylines. insert (polylines. end (),
                        pattern. polylines. begin (),
                        pattern. polylines. end ()) ;
+    else
+        for (auto p : pattern. polylines)
+            if (p. selected[selection])
+                polylines. push_back (p) ;
 }
 
 void dpps::Pattern::random_update_property (

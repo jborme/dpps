@@ -749,7 +749,7 @@ public:
 
     /** @brief Appends the pattern passed as argument to the current
      * instance. */
-    void append_from (const Pattern &p) ;
+    void append_from (const Pattern &p, const selection_t selection = -1) ;
 
     /* @brief Returns a pattern with only the selected polylines.
      *

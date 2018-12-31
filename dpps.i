@@ -525,7 +525,7 @@ public:
     //void push_front (const Polyline &p) ;
     Polyline pop_back () ;
     //void pop_front () ;
-    void append_from (const Pattern &p) ;
+    void append_from (const Pattern &p, const selection_t selection = -1) ;
     //vector<Polyline> vector_selected (selection_t selection) ;
     Polyline get_polyline (long_unsigned_int number) ;
     void random_update_property (const enum_random_property property,
