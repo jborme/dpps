@@ -85,7 +85,7 @@ public:
     };
 protected:
     //std::array<double, 4> coordinates {{0., 0., 0., 0.}} ;
-    bool all_set {false} ;
+    bool layers_set {false} ;
 
     Vertex lower_left, upper_right ;
 
@@ -135,6 +135,7 @@ public:
 
     // Writer_DXF_R12 () ;
     Writer_DXF_R12 (const std::string &set_filename, const bool append) ;
+    Writer_DXF_R12 (const std::string &set_filename) ;
     Writer_DXF_R12 (
         const std::string &set_filename,
         const bool append,
@@ -153,6 +154,13 @@ public:
                          const std::vector<std::string> &vstring) ;
     void write_Polyline (const Polyline &polyline) ;
     void close () ;
+
+    void set_julian_date (const double julian_date) ;
+    void set_layer_names (const std::string &layer_name_parametre) ;
+    void set_dot_dxf_export (const enum_dot_dxf_export dot_dxf_export) ;
+    void set_two_point_line_as_polyline (const bool two_point_line_as_polyline) ;
+    void set_layer_colours (const std::string &layer_colour_parametre) ;
+
     void set_all_parametres (
         //const bool dot_as_polyline,
         const bool two_point_line_as_polyline,

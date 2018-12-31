@@ -1125,6 +1125,7 @@ typedef enum {
 class Writer_DXF_R12: public Writer {
 public:
     static const long_unsigned_int min_handle {581} ;
+    Writer_DXF_R12 (const char *set_filename) ;
     Writer_DXF_R12 (const char *set_filename, const bool append) ;
     Writer_DXF_R12 (
         const char *set_filename,
@@ -1142,6 +1143,11 @@ public:
         const char *layer_name_parametre,
         const char *layer_colour_parametre
                             ) ;
+    void set_julian_date (const double julian_date) ;
+    void set_layer_names (char *layer_name_parametre) ;
+    void set_dot_dxf_export (const enum_dot_dxf_export dot_dxf_export) ;
+    void set_two_point_line_as_polyline (const bool two_point_line_as_polyline) ;
+    void set_layer_colours (char *layer_colour_parametre) ;
 } ;
 
 class Writer_SVG: public Writer {

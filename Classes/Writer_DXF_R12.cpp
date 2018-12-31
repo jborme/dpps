@@ -36,10 +36,15 @@ dpps::Writer_DXF_R12::~Writer_DXF_R12 () {
 }
 
 dpps::Writer_DXF_R12::Writer_DXF_R12 (
+    const std::string &set_filename): Writer(set_filename, false) {
+    handle = min_handle ;
+}
+
+dpps::Writer_DXF_R12::Writer_DXF_R12 (
     const std::string &set_filename,
     const bool append): Writer(set_filename, append) {
     handle = min_handle ;
-    // all_set = false ; // already set to false
+    // layers_set = false ; // already set to false
 }
 
 dpps::Writer_DXF_R12::Writer_DXF_R12 (
@@ -237,66 +242,14 @@ void dpps::Writer_DXF_R12::set_all_parametres (
     const std::string &layer_name_parametre,
     const std::string &layer_colour_parametre) {
 
-    if (julian_date >= 0)
-        writer_settings. julian_date = julian_date ;
-    else {
-        time_t epoch ;
-        time_t now ;
-        struct tm epoch_info ;
-        epoch_info. tm_year = 70 ; // 1970
-        epoch_info. tm_mon  = 0 ;  // January
-        epoch_info. tm_mday = 1 ;  // 1st
-        epoch_info. tm_hour = 0 ;  // 0 h
-        epoch_info. tm_min  = 0 ;  // 0 min
-        epoch_info. tm_sec  = 0 ;  // 0 s
-        epoch = mktime (&epoch_info) ;
-        now   = time (nullptr) ;
-        writer_settings. julian_date = 2440587.5 + difftime (now, epoch) / 86400.0 ;
-    }
+    set_julian_date (julian_date) ;
+    set_layer_names (layer_name_parametre) ;
+    set_layer_colours (layer_colour_parametre) ;
+    set_dot_dxf_export (dot_dxf_export) ;
+    set_two_point_line_as_polyline (two_point_line_as_polyline) ;
 
-    if (layer_name_parametre. empty())
-        // the default value
-        layer_names. push_back (writer_settings. layer_name_parametre) ;
-    else
-        layer_names = split_string (layer_name_parametre, ',', true) ;
-    if (layer_names. size () == 0) {
-        std::string reason {"Writer_DXF_R12::set_all_parametres, layer name \
-set to null"} ;
-        throw bad_parametre (reason. c_str ()) ;
-    }
-    if (layer_colour_parametre. empty()) {
-        long_unsigned_int i {0} ;
-        for (auto name: layer_names) {
-            layer_colours. push_back (i) ;
-            i++ ;
-        }
-    } else {
-        std::vector<std::string> vector_colour_string {split_string (layer_colour_parametre, ',', true)} ;
-        for (auto colour: vector_colour_string)
-            layer_colours. push_back (std::strtol(colour. c_str(), nullptr, 10)) ;
-    }
-    if (layer_colours. size() < layer_names. size ()) {
-        std::string reason {"Writer_DXF_R12::set_all_parametres, layer colours \
-are not enough for all layers"} ;
-        throw bad_parametre (reason. c_str ()) ;
-    }
-    for (auto &s : layer_names) {
-        s = remove_spaces_left (remove_spaces_right (s)) ;
-        if (s. empty ()) {
-            std::string reason {"Writer_DXF_R12::set_all_parametres, layer \
-cannot be empty nor contain only spaces"} ;
-            throw bad_parametre (reason. c_str ()) ;
-        }
-        if (s == "0") {
-            std::string reason {"Writer_DXF_R12::set_all_parametres, a layer \
-cannot be named \"0\", which is a reserved named"} ;
-            throw bad_parametre (reason. c_str ()) ;
-        }
-    }
     //writer_settings. dot_as_polyline = dot_as_polyline ;
-    writer_settings. dot_dxf_export = dot_dxf_export ;
-    writer_settings. two_point_line_as_polyline = two_point_line_as_polyline ;
-    all_set = true ;
+    layers_set = true ;
 }
 
 void dpps::Writer_DXF_R12::set_parametres (
@@ -352,6 +305,89 @@ void dpps::Writer_DXF_R12::write_Polyline (const Polyline &polyline) {
         for (auto &i: polyline.vertices)
             write_dxf_vertex (i.x, i.y, layer_number) ;
         write_dxf_seqend (layer_number) ;
+    }
+}
+
+///////////////////////////////////////////
+// dpps::Writer_DXF_R12:: setter methods //
+///////////////////////////////////////////
+
+void dpps::Writer_DXF_R12::set_julian_date (const double julian_date) {
+    if (julian_date >= 0)
+        writer_settings. julian_date = julian_date ;
+    else {
+        time_t epoch ;
+        time_t now ;
+        struct tm epoch_info ;
+        epoch_info. tm_year = 70 ; // 1970
+        epoch_info. tm_mon  = 0 ;  // January
+        epoch_info. tm_mday = 1 ;  // 1st
+        epoch_info. tm_hour = 0 ;  // 0 h
+        epoch_info. tm_min  = 0 ;  // 0 min
+        epoch_info. tm_sec  = 0 ;  // 0 s
+        epoch = mktime (&epoch_info) ;
+        now   = time (nullptr) ;
+        writer_settings. julian_date = 2440587.5 + difftime (now, epoch) / 86400.0 ;
+    }
+}
+
+void dpps::Writer_DXF_R12::set_layer_names (const std::string &layer_name_parametre) {
+    if (layer_name_parametre. empty())
+        // the default value
+        layer_names. push_back (writer_settings. layer_name_parametre) ;
+    else
+        layer_names = split_string (layer_name_parametre, ',', true) ;
+    if (layer_names. size () == 0) {
+        std::string reason {"Writer_DXF_R12::set_all_parametres, layer name \
+set to null"} ;
+        throw bad_parametre (reason. c_str ()) ;
+    }
+
+    for (auto &s : layer_names) {
+        s = remove_spaces_left (remove_spaces_right (s)) ;
+        if (s. empty ()) {
+            std::string reason {"Writer_DXF_R12::set_all_parametres, layer \
+cannot be empty nor contain only spaces"} ;
+            throw bad_parametre (reason. c_str ()) ;
+        }
+        if (s == "0") {
+            std::string reason {"Writer_DXF_R12::set_all_parametres, a layer \
+cannot be named \"0\", which is a reserved named"} ;
+            throw bad_parametre (reason. c_str ()) ;
+        }
+    }
+    layers_set = true ;
+}
+
+void dpps::Writer_DXF_R12::set_dot_dxf_export (const enum_dot_dxf_export dot_dxf_export) {
+    writer_settings. dot_dxf_export = dot_dxf_export ;
+}
+
+void dpps::Writer_DXF_R12::set_two_point_line_as_polyline (const bool two_point_line_as_polyline) {
+    writer_settings. two_point_line_as_polyline = two_point_line_as_polyline ;
+}
+
+void dpps::Writer_DXF_R12::set_layer_colours (const std::string &layer_colour_parametre) {
+    if (!layers_set) {
+            std::string reason {"Writer_DXF_R12::set_all_parametres, colours \
+can only be set after layers are set, call set_layers first()"} ;
+            throw bad_parametre (reason. c_str ()) ;
+    }
+    if (layer_colour_parametre. empty()) {
+        long_unsigned_int i {0} ;
+        for (auto name: layer_names) {
+            layer_colours. push_back (i) ;
+            i++ ;
+        }
+    } else {
+        std::vector<std::string> vector_colour_string {split_string (layer_colour_parametre, ',', true)} ;
+        for (auto colour: vector_colour_string)
+            layer_colours. push_back (std::strtol(colour. c_str(), nullptr, 10)) ;
+    }
+    if (layer_colours. size() < layer_names. size ()) {
+        std::string reason {"Writer_DXF_R12::set_all_parametres, layer colours \
+are not enough for all layers"} ;
+        throw bad_parametre (reason. c_str ()) ;
     }
 }
 
@@ -452,7 +488,7 @@ void dpps::Writer_DXF_R12::close () {
                             " could not be closed"} ;
         throw bad_io (reason. c_str ()) ;
     }
-    if (all_set) { // We can only go there if user set the layers.
+    if (layers_set) { // We can only go there if user set the layers.
         // in case user just invoked the two-argument constructor and
         // the instance is destroyed, there is no point in writing the final
         // file, and we cannot call write_final_header() as we don't have a
