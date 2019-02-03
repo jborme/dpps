@@ -132,6 +132,36 @@ check_selection_not_negative_not_too_high(selection) ; ;
     }
 }
 
+void dpps::Pattern::select_all (const bool status,
+                                 const selection_t selection) {
+check_selection_not_too_high(selection) ;
+    for (auto &p : polylines) {
+        if ((selection < 0) || (p. selected[selection])) {
+            // if performance issue, consider duplicating the code
+            p. select_all (status) ;
+        }
+    }
+}
+
+void dpps::Pattern::toggle_all (const selection_t selection) {
+check_selection_not_too_high(selection) ;
+    for (auto &p : polylines) {
+        if ((selection < 0) || (p. selected[selection])) {
+            p. selected. flip () ; // p. toggle_all () ; // we avoid function call
+        }
+    }
+}
+
+void dpps::Pattern::toggle (const selection_t selection_to_toggle, const selection_t selection) {
+check_selection_not_negative_not_too_high(selection_to_toggle) ;
+check_selection_not_too_high(selection) ;
+    for (auto &p : polylines) {
+        if ((selection < 0) || (p. selected[selection])) {
+            p. selected[selection_to_toggle] = !p. selected[selection_to_toggle] ;
+        }
+    }
+}
+
 void dpps::Pattern::select_window (const double xmin, const double ymin,
                         const double xmax, const double ymax,
                         const bool dots_as_circles,

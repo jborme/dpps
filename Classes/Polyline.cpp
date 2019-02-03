@@ -863,8 +863,7 @@ void dpps::Polyline::select_all (const bool status) {
 }
 
 void dpps::Polyline::toggle_all () {
-    for (int i{0} ; i < polyline_max_selection ; i++)
-        selected[i] = !selected[i] ;
+    selected. flip () ;
 }
 
 void dpps::Polyline::toggle (const selection_t selection) {

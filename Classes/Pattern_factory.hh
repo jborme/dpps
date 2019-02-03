@@ -22,7 +22,7 @@ typedef std::vector<std::vector<std::vector<std::pair<double,double>>>> shape ;
 class Pattern_factory {
 public:
 
-    /* * @brief Replaces the current Polyline a regular polygon whose
+    /** @brief Replaces the current Polyline a regular polygon whose
      * circonscribed circle is the circle tangent to the first two edges of the
      * polyline.
      *
@@ -95,6 +95,47 @@ public:
                             const enum_partial_dash_policy partial_dash_policy) ;
 
     static dpps::Pattern Pattern_from_selected (const Pattern &p, const selection_t selection = 0) ;
+
+    /** @brief Calculates the differences of two patterns. All polylines
+     * present only in the new one, and those only in the old one are placed
+     * into selection. The selection properties of the returned pattern are
+     * only derived from
+     * Similarly, all polylines present in the old that are not in the new
+     * are selected.
+     * As many function, it works with selections so that it compares only the
+     * subset of polylines that were intially selected (or -1 for all polylines).
+     * When ignore_references is set to false (the default), then references are
+     * used. It means that identical polylines with different references will be
+     * considered different, and therefore added in both the only_in_new and into
+     * only_in_old. When set to true, the polylines are compared independently
+     * of their reference.
+     * Same goes for ignore_dose.
+     * The precision parameter is used to compare both the polylines (on basis
+     * of their vertices) and for the dose.
+     * The function uses the is_equal function of Polyline, and will compare
+     * vertex to vertex. Polylines which differ from a circular
+     * rotation of vertices will be considered as different.
+     * selection_old and selection_new are usually different (if equal, the
+     * an empty pattern is immediately returned).
+     * selection_only_new and selection_only_old can be the same.
+     * selection_only_new and _old can be the same or different than
+     * selection_new and _old, since they refer to a different pattern.
+     * The resulting pattern will not carry the selections of the initial
+     * pattern_new and pattern_old
+     *
+     * The returned pattern contains the differing polylines, selection 1 for
+     * those present in old and not in new, selection 2 for those in new and
+     * not in 1.
+     */
+    static dpps::Pattern compare (const Pattern &pattern_old,
+                const Pattern &pattern_new,
+                const selection_t selection_old = -1,
+                const selection_t selection_new = -1,
+                const selection_t selection_only_old = 0,
+                const selection_t selection_only_new = 1,
+                const bool ignore_references = false,
+                const bool ignore_dose = false,
+                const double precision = std::numeric_limits<double>::epsilon()) ;
 } ;
 } // namespace dpps
 #endif

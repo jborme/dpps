@@ -219,7 +219,7 @@ public:
     /** @brief Removes all selection registers from the Polyline. */
     void select_all (const bool status) ;
 
-    void toggle (const selection_t) ;
+    void toggle (const selection_t selection) ;
 
     void toggle_all () ;
 

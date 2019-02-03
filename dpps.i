@@ -389,6 +389,9 @@ public:
                         const bool dots_as_cricles = true,
                         const selection_t selection = 0) ;
     void select_window (const Vertex &min, const Vertex &max) ;
+    void select_all (const bool status) ;
+    void toggle (const selection_t) ;
+    void toggle_all () ;
     void select_integer_property (
          const enum_integer_property property,
          const long_unsigned_int parametre,
@@ -938,6 +941,15 @@ public:
                            const enum_partial_dash_policy partial_dash_policy) ;
     static Pattern Pattern_from_selected (Pattern &p,
                                                 selection_t selection = -1) ;
+    static Pattern compare (const Pattern &pattern_old,
+                const Pattern &pattern_new,
+                const selection_t selection_old = -1,
+                const selection_t selection_new = -1,
+                const selection_t selection_only_old = 0,
+                const selection_t selection_only_new = 1,
+                const double precision = std::numeric_limits<double>::epsilon(),
+                const bool ignore_references = false,
+                const bool ignore_dose = false) ;
 } ;
 
 class Reader {

@@ -11,7 +11,7 @@
  */
 #include <limits>
 #include <cmath>
-
+#include <iostream>
 #include "Pattern_factory.hh"
 
 dpps::Pattern dpps::Pattern_factory::explode (
@@ -379,5 +379,66 @@ check_selection_not_too_high(selection) ;
     for (auto &i : p. polylines)
         if ((selection < 0) || (i. selected[selection]))
             result. push_back (i) ;
+    return result ;
+}
+
+dpps::Pattern dpps::Pattern_factory::compare (const Pattern &pattern_old,
+                const Pattern &pattern_new,
+                const selection_t selection_old,
+                const selection_t selection_new,
+                const selection_t selection_only_old,
+                const selection_t selection_only_new,
+                const bool ignore_references,
+                const bool ignore_dose,
+                const double precision) {
+check_selection_not_too_high(selection_old) ;
+check_selection_not_too_high(selection_new) ;
+check_selection_not_negative_not_too_high(selection_only_old) ;
+check_selection_not_negative_not_too_high(selection_only_new) ;
+    Pattern result ;
+    if ((selection_old == selection_new) && (selection_old != -1)) {
+        // empty set
+        return result ;
+    }
+    // writeable copies only for the useful selected parts
+    Pattern pat_old (Pattern_from_selected (pattern_old, selection_old)) ;
+    if (pat_old. polylines. size () == 0) {
+        // edge case with an empty selection in old pattern
+        // all (selected) polylines in the new pattern are differing,
+        // therefore all become part of selection_only_new
+        result = Pattern_from_selected (pattern_new, selection_new) ;
+        result. selection_swap (selection_new, selection_only_new) ;
+        // we reset all selections except selection_only_new
+        for (int i{0} ; i < polyline_max_selection ; i++)
+            if (i != selection_only_new)
+                result. select (logical_action_none, i) ;
+        return result ;
+    }
+    Pattern pat_new (Pattern_from_selected (pattern_new, selection_new)) ;
+    pat_old. select_all (false) ;
+    pat_new. select_all (false) ;
+    for (auto &pnew : pat_new. polylines) {
+        // std::cerr << "New: " << pnew.display_string() <<std::endl;
+        for (auto &pold : pat_old. polylines) {
+            if (!pold. selected[1]) { // selected means excluded due to be identical to another
+                // std::cerr << "to : " << pold.display_string() <<std::endl;
+                if (!( ((ignore_references == false) && (pnew. reference != pold. reference)) ||
+                        ((ignore_dose == false) && (fabs (pnew. dose - pold. dose) < precision))  ||
+                        (!pnew. equals_to (pold, precision))
+                    )) { // they are identical, we mark them. This pold will be skipped from now
+                        // std::cerr << "identical " << std::endl ;
+                        pold. selected[1] = 1 ;
+                        pnew. selected[2] = 1 ;
+                        // we found an identical to pnew, no need to scan more pat_old
+                        break ;
+                }
+            }
+        }
+    }
+    // We want the differing, not the identical, so we toggle the selection.
+    pat_old. toggle (1) ;
+    pat_new. toggle (2) ;
+    result = Pattern_from_selected (pat_old, 1) ;
+    result. append_from (Pattern_from_selected (pat_new, 2)) ;
     return result ;
 }

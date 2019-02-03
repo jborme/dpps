@@ -194,15 +194,27 @@ public:
     /** @brief Selects all polylines, or unselect them, or toggles the selection,
      * depeding on the mode. Default action is to select all.
      *
-     * logical_operator = 0 : T selects all polylines in the pattern.
-     * logical_operator = 1 : F unselects the polylines.
-     * logical_operator = 2 : ~ inverts (toggles) the selection.
-     *
-     * Other values of logical_operator lead to no action.
-     *
+     * logical_action_all    : selects all polylines in the pattern.
+     * logical_action_none   : unselects the polylines.
+     * logical_action_toggle : inverts (toggles) the selection.
      */
     void select (const enum_logical_action action,
                  const selection_t selection) ;
+
+    /** @brief calls select_all() on each selected Polyline, which enables
+     * to either sets all selections to true, or all selections to false.
+     */
+    void select_all (const bool status, const selection_t selection = -1) ;
+
+    /** @brief calls toggle() on each selected Polyline, allowing to toggle
+     * one paticular selection flag in all the selected polylines.
+     */
+    void toggle (const selection_t selection_to_toggle, const selection_t selection = -1) ;
+
+    /** @brief calls toggle_all() on each selected Polyline, which toggles
+     * the selection flags.
+     */
+    void toggle_all (const selection_t selection = -1) ;
 
     /** @brief selects entities whose bounding box is entirely contained within
      *  the window. */
