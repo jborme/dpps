@@ -192,6 +192,16 @@ void dpps::Pattern::select_window (const Vertex &min, const Vertex &max) {
     select_window (min. x, min. y, max. x, max. y) ;
 }
 
+void dpps::Pattern::select_window (const Vertex &min, const Vertex &max,
+                        const bool dots_as_circles) {
+    select_window (min. x, min. y, max. x, max. y, dots_as_circles) ;
+}
+
+void dpps::Pattern::select_window (const Vertex &min, const Vertex &max,
+                        const bool dots_as_circles,
+                        const selection_t selection) {
+    select_window (min. x, min. y, max. x, max. y, dots_as_circles, selection) ;
+}
 void dpps::Pattern::selection_next (const selection_t origin_selection,
                            const selection_t destination_selection,
                            const bool unselect_origin) {
@@ -1397,7 +1407,7 @@ dpps::Polyline dpps::Pattern::pop_back () {
 void dpps::Pattern::append_from (const Pattern &pattern,
                                  const selection_t selection) {
 check_selection_not_too_high(selection) ;
-    if (selection == -1)
+    if (selection < 0)
         polylines. insert (polylines. end (),
                        pattern. polylines. begin (),
                        pattern. polylines. end ()) ;

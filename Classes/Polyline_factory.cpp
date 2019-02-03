@@ -133,6 +133,7 @@ dpps::Polyline dpps::Polyline_factory::cross (
                    Vertex (t, -t),
                    Vertex (t, -s),
                    Vertex (-t, -s)} ;
+    p. set_closure (true) ;
     return p ;
 }
 

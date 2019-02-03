@@ -388,7 +388,9 @@ public:
                         const double xmax, const double ymax,
                         const bool dots_as_cricles = true,
                         const selection_t selection = 0) ;
-    void select_window (const Vertex &min, const Vertex &max) ;
+    void select_window (const Vertex &min, const Vertex &max,
+                        const bool dots_as_circles = true,
+                        const selection_t selection = 0) ;
     void select_all (const bool status) ;
     void toggle (const selection_t) ;
     void toggle_all () ;

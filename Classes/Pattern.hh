@@ -225,6 +225,13 @@ public:
 
     void select_window (const Vertex &min, const Vertex &max) ;
 
+    void select_window (const Vertex &min, const Vertex &max,
+                        const bool dots_as_circles) ;
+
+    void select_window (const Vertex &min, const Vertex &max,
+                        const bool dots_as_circles,
+                        const selection_t selection) ;
+
     /** @brief Adds to the current selection a range of polylines in the Pattern
      * with their number. Minimum range value is 1, maximum value is size().
      *
@@ -312,11 +319,11 @@ public:
      * @note Pattern::select_front() is equivalent to
      * Pattern::select_integer_property (0, 0, 0, 0, 0)
      * */
-    void select_front (const selection_t selection = -1) ;
+    void select_front (const selection_t selection = 0) ;
 
     /** @brief Adds the last polyline of the vector to the specified selection.
      * */
-    void select_back (const selection_t selection = -1) ;
+    void select_back (const selection_t selection = 0) ;
 
     // Iterated functions from Polyline, applying to polyline currently selected
     // (use Pattern::select_all() if it should be applied to all polylines.)
