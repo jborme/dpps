@@ -115,7 +115,7 @@ double get_model_value (const enum_progression_model model,
                        const long_unsigned_int number_values,
                        const long_unsigned_int i) ;
 
-std::string comma_separated_string_from_vector (const std::vector<std::string> list) ;
+std::string vector_to_string (const std::vector<std::string> list, const char separator=',') ;
 
 void check_selection_not_negative_not_too_high(selection_t THE_SELECTION) ;
 void check_selection_not_too_high(selection_t THE_SELECTION) ;

@@ -1260,7 +1260,7 @@ public:
     void clear_focus_points () ;
 } ;
 
-std::string comma_separated_string_from_vector (const std::vector<std::string> list) ;
+std::string vector_to_string (const std::vector<std::string> list, const char separator=',') ;
 
 class Matrix2x2 {
 public:

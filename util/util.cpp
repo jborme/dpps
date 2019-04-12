@@ -224,12 +224,13 @@ double dpps::get_model_value (const enum_progression_model model,
     return 0.0 ;
 }
 
-std::string dpps::comma_separated_string_from_vector (const std::vector<std::string> list) {
+std::string dpps::vector_to_string (const std::vector<std::string> list, const char separator) {
     std::string result ;
+    std::string sep {separator} ;
     for (long_unsigned_int i{0} ; i < list. size () ; i++) {
         result += list[i] ;
         if (i < list. size () - 1)
-            result += "," ;
+            result += separator ;
     }
     return result ;
 }
