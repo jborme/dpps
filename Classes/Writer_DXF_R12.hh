@@ -86,6 +86,7 @@ public:
 protected:
     //std::array<double, 4> coordinates {{0., 0., 0., 0.}} ;
     bool layers_set {false} ;
+    bool colours_set {false} ;
 
     Vertex lower_left, upper_right ;
 
@@ -132,6 +133,8 @@ public:
     // Implementation of inherited virtual functions.
     // The public interface is the same as the parent class, as we want the
     // main program to handle Writer derivatives generically.
+
+    const std::string default_layer_name {"1"} ;
 
     // Writer_DXF_R12 () ;
     Writer_DXF_R12 (const std::string &set_filename, const bool append) ;

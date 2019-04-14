@@ -389,6 +389,7 @@ can only be set after layers are set, call set_layers first()"} ;
 are not enough for all layers"} ;
         throw bad_parametre (reason. c_str ()) ;
     }
+    colours_set = true ;
 }
 
 ///////////////////////////////////////////////////
@@ -399,9 +400,12 @@ void dpps::Writer_DXF_R12::write_dxf_circle (const double x,
      const double y,
      const double radius,
      const long_unsigned_int layer_number) {
+    std::string name {"0"};
+    if (layer_number < layer_names. size())
+        name = layer_names. at (layer_number) ;
     // there is a 0 only in the end.
     tmpfile << "CIRCLE\n  5\n" << std::hex << handle
-         << "\n  8\n" << layer_names. at (layer_number)
+         << "\n  8\n" << name
          << std::setprecision (precision)
          << "\n 10\n" << rounding_zero (x) << "\n 20\n" << rounding_zero (y) << "\n 30\n0.0"
          << "\n 40\n" << rounding_zero (radius) << "\n  0\n" ;
@@ -412,8 +416,11 @@ void dpps::Writer_DXF_R12::write_dxf_point (const double x,
      const double y,
      const long_unsigned_int layer_number) {
     // there is a 0 only in the end.
+    std::string name {"0"};
+    if (layer_number < layer_names. size())
+        name = layer_names. at (layer_number) ;
     tmpfile << "POINT\n  5\n" << std::hex << handle
-         << "\n  8\n" << layer_names. at (layer_number)
+         << "\n  8\n" << name
          << std::setprecision (precision)
          << "\n 10\n" << rounding_zero (x) << "\n 20\n" << rounding_zero (y) << "\n 30\n0.0\n  0\n" ;
     handle++ ;
@@ -423,8 +430,11 @@ void dpps::Writer_DXF_R12::write_dxf_line (
     const double x1, const double y1,
     const double x2, const double y2,
     const long_unsigned_int layer_number) {
+    std::string name {"0"};
+    if (layer_number < layer_names. size())
+        name = layer_names. at (layer_number) ;
     tmpfile << "LINE\n  5\n" << std::hex << handle
-         << "\n  8\n" << layer_names. at (layer_number)
+         << "\n  8\n" << name
          << std::setprecision (precision)
          << "\n 10\n" << rounding_zero (x1) << "\n 20\n" << rounding_zero (y1) << "\n 30\n0.0"
          << "\n 11\n" << rounding_zero (x2) << "\n 21\n" << rounding_zero (y2) << "\n 31\n0.0\n  0\n" ;
@@ -435,8 +445,11 @@ void dpps::Writer_DXF_R12::write_dxf_polyline_header (
     const bool closed, const long_unsigned_int layer_number) {
   // adds the header for a closed (70 1) polyline.
   // user must then add vertices and finish the line with a seqend.
+    std::string name {"0"};
+    if (layer_number < layer_names. size())
+        name = layer_names. at (layer_number) ;
   tmpfile << "POLYLINE\n  5\n" << std::hex << handle
-       << "\n  8\n" << layer_names. at (layer_number)
+       << "\n  8\n" << name
        << "\n 66\n     1\n 10\n0.0\n 20\n0.0\n 30\n0.0\n 70\n     "
        << (closed ? '1':'0') << "\n  0\n" ;
   handle++ ;
@@ -445,8 +458,11 @@ void dpps::Writer_DXF_R12::write_dxf_polyline_header (
 void dpps::Writer_DXF_R12::write_dxf_vertex (
     const double x, const double y,
     const long_unsigned_int layer_number) {
+    std::string name {"0"};
+    if (layer_number < layer_names. size())
+        name = layer_names. at (layer_number) ;
   tmpfile << "VERTEX\n  5\n" << std::hex << handle
-       << "\n  8\n" << layer_names. at (layer_number)
+       << "\n  8\n" << name
        << std::setprecision (precision)
        << "\n 10\n" << rounding_zero (x) << "\n 20\n" << rounding_zero (y) << "\n 30\n0.0\n  0\n" ;
   handle++ ;
@@ -454,8 +470,11 @@ void dpps::Writer_DXF_R12::write_dxf_vertex (
 
 void dpps::Writer_DXF_R12::write_dxf_seqend (
     const long_unsigned_int layer_number) {
+    std::string name {"0"};
+    if (layer_number < layer_names. size())
+        name = layer_names. at (layer_number) ;
   tmpfile << "SEQEND\n  5\n" << std::hex << handle ;
-  tmpfile << "\n  8\n" << layer_names. at (layer_number)
+  tmpfile << "\n  8\n" << name
        << "\n  0\n" ;
   handle++ ;
 }
@@ -464,6 +483,11 @@ void dpps::Writer_DXF_R12::write_Pattern_selected (const Pattern &pattern,
                                                  const selection_t selection) {
     lower_left = pattern. lower_left(selection) * 1.05 ;
     upper_right = pattern. upper_right(selection) * 1.05 ;
+
+    if (!layers_set)
+        set_layer_names (default_layer_name) ;
+    if (!colours_set)
+        set_layer_colours ("") ;
 
     // handleseed in the header will be equal to max_handle
     // handles in the file will range from min_handle = (dec)581 = (hex)245
@@ -478,6 +502,10 @@ void dpps::Writer_DXF_R12::write_Pattern (const Pattern &pattern) {
     upper_right = pattern. upper_right(-1) * 1.05 ;
     //max_handle = min_handle + pattern. vertices_size (-1) +
     //             + (2 * pattern. size (-1)) ;
+    if (!layers_set)
+        set_layer_names (default_layer_name) ;
+    if (!colours_set)
+        set_layer_colours ("") ;
     Writer::write_Pattern (pattern) ;
 }
 
